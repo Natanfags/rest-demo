@@ -1,18 +1,23 @@
 package com.natan.restdemo.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 
 @Entity
 public class Veiculo {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column
     private String nome;
 
+    @Column
     private long codigo;
-    private String test;
 
     public void setId(Long id) {
         this.id = id;
@@ -39,11 +44,4 @@ public class Veiculo {
         this.codigo = codigo;
     }
 
-    public String getTest() {
-        return test;
-    }
-
-    public void setTest(String test) {
-        this.test = test;
-    }
 }
