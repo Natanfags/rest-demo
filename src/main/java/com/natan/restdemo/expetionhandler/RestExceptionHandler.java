@@ -34,8 +34,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(ex, restErro, headers, HttpStatus.BAD_REQUEST, request);
     }
 
-    public record RestErro(String message, String causeMessage) {
 
-    }
 
 }
