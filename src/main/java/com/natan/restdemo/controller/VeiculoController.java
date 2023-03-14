@@ -2,8 +2,6 @@ package com.natan.restdemo.controller;
 
 import com.natan.restdemo.entity.Veiculo;
 import com.natan.restdemo.service.VeiculoService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -15,15 +13,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
+import java.net.URI;
 import java.util.List;
 
 @RestController
 @RequestMapping("/veiculo")
 public class VeiculoController {
 
-    @Autowired
-    private VeiculoService veiculoService;
+    private final VeiculoService veiculoService;
+
+    public VeiculoController(VeiculoService veiculoService) {
+        this.veiculoService = veiculoService;
+    }
 
     @GetMapping
     public ResponseEntity<List<Veiculo>> buscarTodos() {
@@ -41,7 +44,15 @@ public class VeiculoController {
     @PostMapping
     public ResponseEntity<Veiculo> novo(@RequestBody Veiculo veiculo) {
 
-        return ResponseEntity.ok(veiculoService.novo(veiculo));
+        Veiculo novo = veiculoService.novo(veiculo);
+
+        URI uri = ServletUriComponentsBuilder
+                .fromCurrentRequestUri()
+                .path("/{codigo}")
+                .buildAndExpand(novo.getCodigo())
+                .toUri();
+
+        return ResponseEntity.created(uri).body(novo);
     }
 
     @PutMapping(value = "/{id}")
@@ -53,14 +64,8 @@ public class VeiculoController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable("id") Long id) {
-
-        try {
-            veiculoService.delete(id);
-        } catch (EmptyResultDataAccessException ex) {
-            return new ResponseEntity<>("não encontrado veiculo com id: " + id, HttpStatus.BAD_REQUEST);
-        }
-
-        return new ResponseEntity<>("veiuculo id: " + id + " deletado com sucesso ", HttpStatus.OK);
+        veiculoService.delete(id);
+        return ResponseEntity.ok("Deletado");
     }
 
 }

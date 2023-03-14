@@ -43,10 +43,9 @@ public class VeiculoService {
 
     public void delete(Long id) {
         try {
-
             veiculoRepository.deleteById(id);
         } catch (EmptyResultDataAccessException ex) {
-            throw new EmptyResultDataAccessException(1);
+            throw new EmptyResultDataAccessException("Veiculo não encontrado", 1);
         }
     }
 
