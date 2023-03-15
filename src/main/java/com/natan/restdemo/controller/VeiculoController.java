@@ -1,7 +1,10 @@
 package com.natan.restdemo.controller;
 
 import com.natan.restdemo.entity.Veiculo;
+import com.natan.restdemo.entity.dto.VeiculoDto;
 import com.natan.restdemo.service.VeiculoService;
+import org.modelmapper.ModelMapper;
+import org.springframework.expression.ParseException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -17,6 +20,7 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Objects;
 
 @RestController
 @RequestMapping("/veiculo")
@@ -24,27 +28,37 @@ public class VeiculoController {
 
     private final VeiculoService veiculoService;
 
-    public VeiculoController(VeiculoService veiculoService) {
+    private final ModelMapper modelMapper;
+
+    public VeiculoController(VeiculoService veiculoService, ModelMapper modelMapper) {
         this.veiculoService = veiculoService;
+        this.modelMapper = modelMapper;
     }
 
     @GetMapping
-    public ResponseEntity<List<Veiculo>> buscarTodos() {
-        List<Veiculo> todos = veiculoService.findAll();
+    public ResponseEntity<List<VeiculoDto>> buscarTodos(
+            @PathVariable("page") int page,
+            @PathVariable("size") int size,
+            @PathVariable("sortDir") String sortDir,
+            @PathVariable("sort") String sort) {
+        List<Veiculo> todos = veiculoService.findAllPaginado(page, size, sortDir, sort);
 
-        return ResponseEntity.ok(todos);
+        return ResponseEntity.ok(
+                todos.stream()
+                        .map(this::convertToDto)
+                        .toList());
     }
 
     @GetMapping(value = "/{id}")
-    public ResponseEntity<Veiculo> buscarPorId(@PathVariable("id") Long id) {
-
-        return ResponseEntity.ok(veiculoService.findById(id));
+    public ResponseEntity<VeiculoDto> buscarPorId(@PathVariable("id") Long id) {
+        Veiculo veiculo = veiculoService.findById(id);
+        return ResponseEntity.ok(convertToDto(veiculo));
     }
 
     @PostMapping
-    public ResponseEntity<Veiculo> novo(@RequestBody Veiculo veiculo) {
+    public ResponseEntity<VeiculoDto> novo(@RequestBody VeiculoDto dto) {
 
-        Veiculo novo = veiculoService.novo(veiculo);
+        Veiculo novo = veiculoService.novo(convertToEntity(dto));
 
         URI uri = ServletUriComponentsBuilder
                 .fromCurrentRequestUri()
@@ -52,21 +66,33 @@ public class VeiculoController {
                 .buildAndExpand(novo.getCodigo())
                 .toUri();
 
-        return ResponseEntity.created(uri).body(novo);
+        return ResponseEntity.created(uri).body(convertToDto(novo));
     }
 
     @PutMapping(value = "/{id}")
-    @ResponseStatus
-    public ResponseEntity<Veiculo> atualiza(@PathVariable("id") Long id, @RequestBody Veiculo veiculo) {
-        return ResponseEntity.ok(veiculoService.update(id, veiculo));
+    @ResponseStatus(HttpStatus.OK)
+    public void atualiza(@PathVariable("id") Long id, @RequestBody VeiculoDto dto) {
+
+        if (!Objects.equals(id, dto.getId())) {
+            throw new IllegalArgumentException("Ids diferentes");
+        }
+
+        veiculoService.update(id, convertToEntity(dto));
     }
 
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<String> delete(@PathVariable("id") Long id, @RequestBody VeiculoDto dto) {
         veiculoService.delete(id);
         return ResponseEntity.ok("Deletado");
     }
 
+    private VeiculoDto convertToDto(Veiculo veiculo) throws ParseException {
+        return modelMapper.map(veiculo, VeiculoDto.class);
+    }
+
+    private Veiculo convertToEntity(VeiculoDto dto) {
+        return modelMapper.map(dto, Veiculo.class);
+    }
 }
 

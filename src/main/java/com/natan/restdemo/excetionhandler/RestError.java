@@ -1,4 +1,4 @@
-package com.natan.restdemo.expetionhandler;
+package com.natan.restdemo.excetionhandler;
 
 import java.util.Objects;
 

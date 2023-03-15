@@ -3,7 +3,12 @@ package com.natan.restdemo.service;
 import com.natan.restdemo.entity.Veiculo;
 import com.natan.restdemo.repository.VeiculoRepository;
 import org.assertj.core.util.Lists;
+import org.modelmapper.ModelMapper;
+import org.springframework.context.annotation.Bean;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -18,8 +23,12 @@ public class VeiculoService {
         veiculoRepository = repository;
     }
 
-    public List<Veiculo> findAll() {
-        return Lists.newArrayList(veiculoRepository.findAll());
+    public List<Veiculo> findAllPaginado(int page, int size, String sortDir, String sort) {
+
+        PageRequest pageRequest = PageRequest.of(page, size, Sort.Direction.fromString(sortDir), sort);
+
+        Page<Veiculo> all = veiculoRepository.findAll(pageRequest);
+        return all.getContent();
     }
 
     public Veiculo findById(Long id) {

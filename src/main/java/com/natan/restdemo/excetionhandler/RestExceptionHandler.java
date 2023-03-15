@@ -1,4 +1,4 @@
-package com.natan.restdemo.expetionhandler;
+package com.natan.restdemo.excetionhandler;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.i18n.LocaleContextHolder;
@@ -33,7 +33,6 @@ public class RestExceptionHandler extends ResponseEntityExceptionHandler {
 
         return handleExceptionInternal(ex, restErro, headers, HttpStatus.BAD_REQUEST, request);
     }
-
 
 
 }
