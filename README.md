@@ -10,3 +10,4 @@
 - Implementado exceptionHandler para manipular erros na requisição e demais problemas na API.
 - Criado _bundle de mensagens_ para internecionalizar exceptions e demais mensagem do server.
 - Testando funcionalidade **record** da versão _14_ do Java.
+- Implementado documentação da API com **Swagger2**.

@@ -1,8 +1,20 @@
 package com.natan.restdemo.entity.dto;
 
-import jakarta.persistence.Column;
+import io.swagger.annotations.ApiModel;
+import io.swagger.annotations.ApiModelProperty;
 
+@ApiModel(value = "Veiculo", description = "Representa um veiculo")
 public class VeiculoDto {
+
+    @ApiModelProperty(example = "1")
+    private Long id;
+
+    @ApiModelProperty(value = "nome do veiculo", example = "Carro")
+    private String nome;
+
+    @ApiModelProperty(value = "Codigo do veiculo", example = "555")
+    private long codigo;
+
     public Long getId() {
         return id;
     }
@@ -27,7 +39,4 @@ public class VeiculoDto {
         this.codigo = codigo;
     }
 
-    private Long id;
-    private String nome;
-    private long codigo;
 }
