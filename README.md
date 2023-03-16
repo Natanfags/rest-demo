@@ -11,3 +11,6 @@
 - Criado _bundle de mensagens_ para internecionalizar exceptions e demais mensagem do server.
 - Testando funcionalidade **record** da versão _14_ do Java.
 - Implementado documentação da API com **Swagger2**.
+
+![](preview/swagger-ui-preview-all.png)
+![](preview/swagger-ui-preview.png)

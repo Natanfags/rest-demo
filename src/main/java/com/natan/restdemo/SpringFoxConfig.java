@@ -78,7 +78,7 @@ public class SpringFoxConfig {
 
     private Response getResponse(HttpStatus status, String description) {
         return new ResponseBuilder()
-                .code(status.name())
+                .code(String.valueOf(status.value()))
                 .description(description)
                 .build();
     }

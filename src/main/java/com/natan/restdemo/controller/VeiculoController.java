@@ -1,11 +1,9 @@
 package com.natan.restdemo.controller;
 
+import com.natan.restdemo.controller.openapi.VeiculoControllerOpenApi;
 import com.natan.restdemo.entity.Veiculo;
 import com.natan.restdemo.entity.dto.VeiculoDto;
 import com.natan.restdemo.service.VeiculoService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
-import io.swagger.annotations.ApiParam;
 import org.modelmapper.ModelMapper;
 import org.springframework.expression.ParseException;
 import org.springframework.http.HttpStatus;
@@ -25,10 +23,9 @@ import java.net.URI;
 import java.util.List;
 import java.util.Objects;
 
-@Api(tags = {"Veiculo"})
 @RestController
 @RequestMapping("/veiculo")
-public class VeiculoController {
+public class VeiculoController implements VeiculoControllerOpenApi {
 
     private final VeiculoService veiculoService;
 
@@ -39,7 +36,6 @@ public class VeiculoController {
         this.modelMapper = modelMapper;
     }
 
-    @ApiOperation("Listar Veiculos")
     @GetMapping
     public ResponseEntity<List<VeiculoDto>> buscarTodos(
             @PathVariable("page") int page,
@@ -54,19 +50,15 @@ public class VeiculoController {
                         .toList());
     }
 
-    @ApiOperation("Busca veiculo por ID")
     @GetMapping(value = "/{id}")
     public ResponseEntity<VeiculoDto> buscarPorId(
-            @ApiParam(value = "ID do veiculo", example = "1")
             @PathVariable("id") Long id) {
         Veiculo veiculo = veiculoService.findById(id);
         return ResponseEntity.ok(convertToDto(veiculo));
     }
 
-    @ApiOperation("Cria um novo Veiculo")
     @PostMapping
     public ResponseEntity<VeiculoDto> novo(
-            @ApiParam(name = "corpo", value = "representação de um novo Veiculo")
             @RequestBody VeiculoDto dto) {
 
         Veiculo novo = veiculoService.novo(convertToEntity(dto));
@@ -80,13 +72,10 @@ public class VeiculoController {
         return ResponseEntity.created(uri).body(convertToDto(novo));
     }
 
-    @ApiOperation("Atualiza veiculo por ID")
     @PutMapping(value = "/{id}")
     @ResponseStatus(HttpStatus.OK)
     public void atualiza(
-            @ApiParam(value = "ID do veiculo", example = "1")
             @PathVariable("id") Long id,
-            @ApiParam(name = "corpo", value = "representação de um veiculo com novos dados")
             @RequestBody VeiculoDto dto) {
 
         if (!Objects.equals(id, dto.getId())) {
@@ -96,11 +85,9 @@ public class VeiculoController {
         veiculoService.update(id, convertToEntity(dto));
     }
 
-    @ApiOperation("Exclui veiculo por ID")
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(
-            @ApiParam(value = "ID do veiculo", example = "1")
             @PathVariable("id") Long id) {
         veiculoService.delete(id);
     }
